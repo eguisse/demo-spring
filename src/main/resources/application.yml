@@ -1,14 +1,13 @@
 ---
 # demo-spring application properties file
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 2KB
 
-logging:
-  level:
-    root: "INFO"
-#    org.springframework.web: INFO
-    com.eguisse.demospring: ${LOG_LEVEL:INFO}
-#    org.springframework.security.web: DEBUG
-#    redis.clients.jedis: ${LOG_LEVEL:DEBUG}
-
+# Management and Actuator Configuration
 management:
   endpoint:
     health:
@@ -29,29 +28,39 @@ management:
       export:
         enabled: true
 
+# Logging Configuration
+logging:
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: "demo-spring"
+        version: "1.0.0"
+# Add field source to identify logs from different environments
 
 
 
 
+  level:
+    root: "INFO"
+    #    org.springframework.web: INFO
+    com.eguisse.demospring: ${LOG_LEVEL:INFO}
+#    org.springframework.security.web: DEBUG
+#    redis.clients.jedis: ${LOG_LEVEL:DEBUG}
 
-old:
-  endpoint:
-    metrics:
-      enabled: true
-    health:
-      enabled: true
-      show-details: always
-    prometheus:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: '*'
 
+# Spring Configuration
+spring:
+  application:
+    name: demo-spring
+
+# Enable Swagger UI and API docs
 springdoc:
   api-docs:
-    path: /api-docs
-    enabled: true
+    integration:
+
+
+
   swagger-ui:
     enabled: true
-  
