@@ -51,6 +51,8 @@ run-docker:  ## Run the docker image on localhost
 		-p 8080:8080 \
 		--name demo-spring \
 		--env LOG_LEVEL='INFO' \
+		--env-file "$(PROJECT_DIR)/.env" \
+		"demo-spring:snapshot"
 	@echo "to connect: http://localhost:8080/actuator/health"
 
 run-local:  ## Run the build made locally
