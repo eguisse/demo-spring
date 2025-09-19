@@ -24,7 +24,11 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        MDC.put("requestId", request.getRequestId());
+        MDC.put("requestURI", request.getRequestURI());
+        MDC.put("correlationId", request.getHeader("X-Correlation-ID"));
+        MDC.put("status","");
+        MDC.put("duration-ms","");
         // Log request details before processing the request.
         logger.debug("Request: Method={}, URI={}, Headers={}",
                 request.getMethod(),
@@ -38,13 +42,16 @@ public class LoggingFilter extends OncePerRequestFilter {
         } finally {
             long duration = System.currentTimeMillis() - startTime;  // Calculate how long the request took.
             MDC.put("duration-ms", String.valueOf(duration));
-
-            // Log response details after request processing.
-            logger.info("Response: Method={}, Status={}, URI={}, Duration={}ms",
-                    request.getMethod(),
-                    response.getStatus(),
-                    request.getRequestURI(),
-                    duration);
+            MDC.put("status", String.valueOf(response.getStatus()));
+            // do not log if uri start with actuator
+            if (request.getRequestURI().startsWith("/actuator/") == false ) {
+                // Log response details after request processing.
+                logger.info("Response: Method={}, Status={}, URI={}, Duration={}ms",
+                        request.getMethod(),
+                        response.getStatus(),
+                        request.getRequestURI(),
+                        duration);
+            }
             // Log any exceptions that occurred during processing.
             if (request.getAttribute("javax.servlet.error.exception") != null) {
                 logger.error("Exception during request processing",
